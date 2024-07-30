@@ -1,0 +1,167 @@
+Sure! Here are additional notes explaining what is going on in each step:
+
+## Content Discovery Lab Summary
+
+This document provides a simplified summary of the content discovery lab from TryHackMe, explaining key concepts, methods, and steps involved. The summary is structured with short notes around the codes for better understanding.
+
+## What is Content Discovery?
+Content discovery in web application security involves finding hidden or private content on a web server that isn't immediately visible. This content could include staff portals, backup files, configuration files, administration panels, etc.
+
+### Methods of Content Discovery:
+1. **Manual Methods**
+   - Manually checking various places on a website to uncover hidden content.
+2. **Automated Methods**
+   - Using tools to automate the process of discovering hidden content.
+3. **OSINT (Open-Source Intelligence)**
+   - Using open-source intelligence tools and techniques to gather information.
+
+## Steps in the Lab
+
+### Task 1: Understanding Content Discovery
+**Manual Methods, Automation Methods, OSINT**
+
+**Explanation:**
+- **Manual Methods:** Techniques like examining source code, URL parameters, and guessing hidden paths.
+- **Automation Methods:** Using tools to systematically discover content by trying many different URLs and file names.
+- **OSINT:** Gathering information from publicly available sources like search engines and social media.
+
+**Questions:**
+1. Manual Methods (Answer: Manual Methods)
+2. Automation Methods (Answer: Automation Methods)
+3. OSINT (Answer: OSINT)
+
+### Task 2: Robots.txt
+- The `robots.txt` file tells search engines which pages to show or hide. This file can give clues about hidden areas of a website.
+
+**Explanation:**
+- Robots.txt is often used to prevent search engines from indexing certain parts of a site, but it can reveal sensitive directories if misconfigured.
+
+**Command:**
+```sh
+curl http://MACHINE_IP/robots.txt
+```
+**Question:**
+- What is the directory in the robots.txt that isn't allowed to be viewed by web crawlers? (Answer: /staff-portal)
+
+### Task 3: Favicon
+- Favicons can provide clues about the framework used to build a website.
+
+**Explanation:**
+- A favicon is a small icon associated with a website. Sometimes, default favicons from frameworks are not changed, revealing the framework used.
+
+**Command to find favicon hash:**
+```sh
+curl https://static-labs.tryhackme.cloud/sites/favicon/images/favicon.ico | md5sum
+```
+**Question:**
+- What framework did the favicon belong to? (Answer: CGI:IRC)
+
+### Task 4: Sitemap.xml
+- The `sitemap.xml` file lists all the files the website owner wants to be listed on search engines. It can reveal difficult-to-navigate areas.
+
+**Explanation:**
+- Sitemap.xml is intended to help search engines index the site but can reveal all URLs intended to be indexed, including some that may not be accessible through the UI.
+
+**Command:**
+```sh
+curl http://MACHINE_IP/sitemap.xml
+```
+**Question:**
+- What is the path of the secret area that can be found in the sitemap.xml file? (Answer: /secret-area)
+
+### Task 5: HTTP Headers
+- HTTP headers can provide information about the web server software and scripting languages used.
+
+**Explanation:**
+- HTTP headers are part of the server's response to requests. They can contain information about the server's software, which might be useful for identifying vulnerabilities.
+
+**Command:**
+```sh
+curl -v http://MACHINE_IP
+```
+**Question:**
+- What is the flag value from the X-FLAG header? (Answer: FLAG_VALUE)
+
+### Task 6: Framework Stack
+- By examining the page source, you can find clues about the framework used and its documentation.
+
+**Explanation:**
+- Sometimes, developers leave comments or metadata in the HTML that can reveal what software or frameworks are being used.
+
+**URL:**
+```sh
+http://MACHINE_IP
+```
+**Question:**
+- What is the flag from the framework's administration portal? (Answer: FLAG_VALUE)
+
+### OSINT Methods
+
+#### Google Hacking/Dorking
+- Utilize Google's advanced search features to find specific content on a website.
+
+**Explanation:**
+- Google Dorking uses advanced search operators to find specific information on websites. This can reveal sensitive information unintentionally exposed.
+
+**Example:**
+```sh
+site:tryhackme.com admin
+```
+**Question:**
+- What Google dork operator can be used to only show results from a particular site? (Answer: site)
+
+#### Wappalyzer
+- An online tool and browser extension that identifies technologies used by a website.
+
+**Explanation:**
+- Wappalyzer can detect what technologies and frameworks are being used on a website by analyzing the site’s HTML and JavaScript.
+
+**Question:**
+- What online tool can be used to identify what technologies a website is running? (Answer: Wappalyzer)
+
+#### Wayback Machine
+- A historical archive of websites that shows how they looked in the past.
+
+**Explanation:**
+- The Wayback Machine archives versions of web pages over time, which can help find outdated content or configurations that may still be accessible.
+
+**Question:**
+- What is the website address for the Wayback Machine? (Answer: https://archive.org/web/)
+
+#### GitHub
+- Search GitHub for repositories related to the target website for potential sensitive information.
+
+**Explanation:**
+- GitHub hosts public and private code repositories. Searching for a target’s repositories can reveal sensitive information like source code and configuration files.
+
+**Question:**
+- What is Git? (Answer: A version control system)
+
+#### S3 Buckets
+- Amazon S3 buckets can sometimes have misconfigured permissions, making them accessible publicly.
+
+**Explanation:**
+- S3 buckets are used to store data in the cloud. If misconfigured, they can be publicly accessible, potentially exposing sensitive data.
+
+**Question:**
+- What URL format do Amazon S3 buckets end in? (Answer: .s3.amazonaws.com)
+
+### Task 12: Automated Discovery
+- Using tools like ffuf, dirb, and gobuster to automate content discovery.
+
+**Explanation:**
+- Automated tools use wordlists to try many different URLs and file names quickly, identifying which ones exist on the target server.
+
+**Commands:**
+```sh
+ffuf -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt -u http://MACHINE_IP/FUZZ
+dirb http://MACHINE_IP/ /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
+gobuster dir --url http://MACHINE_IP/ -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
+```
+**Questions:**
+1. What is the name of the directory beginning with /mo... that was discovered? (Answer: /monitor)
+2. What is the name of the log file that was discovered? (Answer: development.log)
+
+---
+
+This summary provides a step-by-step explanation with notes on each task, making it easier to understand and follow along. The commands and questions are highlighted to aid in practical application.
