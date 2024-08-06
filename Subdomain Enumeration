@@ -1,0 +1,41 @@
+In the TryHackMe "Subdomain Enumeration" lab, you'll explore three methods to discover subdomains and expand your attack surface: Brute Force, OSINT (Open-Source Intelligence), and Virtual Host.
+
+Brute Force
+This method involves trying many possible subdomains from a predefined list to find valid ones. Tools like ffuf and dnsrecon automate this process.
+
+OSINT
+OSINT involves using publicly available information to find subdomains. Here are two specific techniques:
+
+SSL/TLS Certificates:
+
+Certificate Authorities log every SSL/TLS certificate they issue. These logs can be searched on sites like crt.sh to find subdomains.
+For example, searching for tryhackme.com on crt.sh shows that store.tryhackme.com was logged on 2020-12-26.
+Search Engines:
+
+Use advanced search queries to find subdomains indexed by search engines. For example, using the Google search query -site:www.tryhackme.com site:*.tryhackme.com reveals subdomains like blog.tryhackme.com.
+Virtual Host
+This method leverages the HTTP Host header to find subdomains hosted on the same IP address. By altering the Host header in HTTP requests, you can identify different sites hosted on the same server.
+
+Practical Steps:
+Start the Machine: Begin the virtual machine provided by TryHackMe.
+
+Brute Force with dnsrecon:
+
+Run dnsrecon -t brt -d acmeitsupport.thm to perform a brute-force DNS enumeration.
+Example output:
+less
+Copy code
+[*] No file was specified with domains to check.
+[*] Using file provided with tool: /usr/share/dnsrecon/namelist.txt
+[*]     A api.acmeitsupport.thm 10.10.10.10
+[*]     A www.acmeitsupport.thm 10.10.10.10
+[+] 2 Record Found
+The first subdomain found: api.acmeitsupport.thm
+OSINT with Sublist3r:
+
+Automate subdomain discovery with Sublist3r by running ./sublist3r.py -d acmeitsupport.thm.
+Example output would list discovered subdomains.
+Summary
+In this lab, you are learning how to enumerate subdomains using various methods to expand your attack surface. Each method provides a different approach to discovering subdomains, which can help identify potential points of vulnerability in a target domain. By practicing these techniques, you enhance your ability to conduct thorough reconnaissance during penetration testing.
+
+For more detailed steps and walkthroughs, you can refer to this GitHub page and YouTube walkthroughs.
