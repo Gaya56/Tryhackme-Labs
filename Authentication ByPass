@@ -98,7 +98,7 @@ curl -H "Cookie: logged_in=true; admin=true" http://MACHINE_IP/cookie-test
 ### Key Points
 
 - **Username Enumeration**: Exploiting error messages to identify valid usernames. - Using "fuff"
-- **Brute Force Attack**: Automating login attempts with known usernames and common passwords. - Using word list provided online 
+- **Brute Force Attack**: Automating login attempts with known usernames and common passwords. - Using word list provided online - fuff is the tool used to do the brute force as its grabbing names from the list 
 - **Logic Flaw Exploitation**: Bypassing authentication checks by manipulating POST and GET data.
 - **Cookie Tampering**: Modifying cookie values to change user privileges.
 
