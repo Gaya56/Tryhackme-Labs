@@ -1,0 +1,26 @@
+What is File inclusion? 
+File inclusion happens when a Web application allows users to request files using parameters in the URL.
+EX) a website might let ou view an image or read a text file by adding a specific parameter to the URL. - if these parameters can be manipulated to access files you should not have access too. 
+
+The Three main types are... 
+1. Local File Inclusion: this vulnerability allows an attacker to incluse files on the server, often leading to exposure of sensitive information like configuration files or passwords 
+2. Remote File Inclusion: This vulnerability allows an attacker to include files from an external source, which can lead to remote code execution and full control over the server. 
+3. Directory Traversal: This attack involves manipulating file paths to access files outside the intended directory, potentially exposing critical system files. 
+
+EX) 
+http://Webapp.thm/get.php?file=userCV.pdf 
+
+"http"       = Protocol 
+"webapp.thm" = Domain Name 
+"get.php"    = File Name 
+"?"          = Query string Begin 
+
+/*Imagine a user wants to view their CV on a website. 
+They send a request to the web server with the file they want to see. 
+For example, the request might look like this: http://webapp.thm/get.php?file=userCV.pdf. In this URL, "file" is the parameter, 
+and "userCV.pdf" is the specific file the user wants to access.*/
+
+Why do they happen / what is the risk? 
+File inclusion vulnerabilities occur when web applications, often written in languages like PHP, don't properly validate user input. This allows attackers to manipulate input and access unintended files. 
+The main risk is that attackers can exploit these vulnerabilities to leak sensitive data or, in more severe cases, execute remote commands on the server if they can upload files.
+
